@@ -1,25 +1,29 @@
 pipeline {
+    // install golang 1.14 on Jenkins node
     agent any
-    stages {
-        stage('Build') {
+    tools {
+        go 'go1.18.1'
+    }
+    environment {
+        GO114MODULE = 'on'
+        CGO_ENABLED = 0 
+        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
+    }
+        stage("build") {
             steps {
-                echo 'Running build automation'
-                sh 'go build goapp/main.go'
-                archiveArtifacts artifacts: 'dist/trainSchedule.zip'
+                echo 'BUILD EXECUTION STARTED'
+                sh 'go version'
+                sh 'go get ./...'
+                sh 'docker build . -t dtalpas123/goapppip'
             }
         }
-        stage('Build Docker Image') {
-            when {
-                branch 'main'
-            }
+        stage('deliver') {
+            agent any
             steps {
-                script {
-                    app = docker.build("dtalpas123/gobuildjenkins")
-                    app.inside {
-                        sh 'echo $(curl localhost:8081)'
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerhubPassword', usernameVariable: 'dockerhubUser')]) {
+                sh "docker login -u ${env.dockerhubUser} -p ${env.dockerhubPassword}"
+                sh 'docker push shadowshotx/product-go-micro'
                 }
             }
         }
     }
-}
