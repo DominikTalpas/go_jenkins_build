@@ -1,29 +1,36 @@
 pipeline {
-    // install golang 1.14 on Jenkins node
-    agent any
-    tools {
-        go 'go1.18.1'
-    }
-    environment {
-        GO114MODULE = 'on'
-        CGO_ENABLED = 0 
-        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
-    }
-        stage("build") {
-            steps {
-                echo 'BUILD EXECUTION STARTED'
-                sh 'go version'
-                sh 'go get ./...'
-                sh 'docker build . -t dtalpas123/goapppip'
-            }
-        }
-        stage('deliver') {
-            agent any
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerhubPassword', usernameVariable: 'dockerhubUser')]) {
-                sh "docker login -u ${env.dockerhubUser} -p ${env.dockerhubPassword}"
-                sh 'docker push shadowshotx/product-go-micro'
-                }
-            }
-        }
-    }
+environment {
+registry = "YourDockerhubAccount/YourRepository"
+registryCredential = 'dockerhub_id'
+dockerImage = ''
+}
+agent any
+stages {
+stage('Cloning our Git') {
+steps {
+git 'https://github.com/YourGithubAccount/YourGithubRepository.git'
+}
+}
+stage('Building our image') {
+steps{
+script {
+dockerImage = docker.build registry + ":$BUILD_NUMBER"
+}
+}
+}
+stage('Deploy our image') {
+steps{
+script {
+docker.withRegistry( '', registryCredential ) {
+dockerImage.push()
+}
+}
+}
+}
+stage('Cleaning up') {
+steps{
+sh "docker rmi $registry:$BUILD_NUMBER"
+}
+}
+}
+}
