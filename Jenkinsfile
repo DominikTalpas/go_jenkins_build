@@ -4,7 +4,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Running build automation'
-                sh 'go build main.go'
+                sh 'go build goapp/main.go'
                 archiveArtifacts artifacts: 'dist/trainSchedule.zip'
             }
         }
