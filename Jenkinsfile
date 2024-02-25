@@ -1,7 +1,7 @@
 pipeline {
 environment {
 registry = "dtalpas123/gohello_forjenkins"
-registryCredential = 'dockerhub_id'
+registryCredential = 'docker_token'
 dockerImage = ''
 }
 agent any
