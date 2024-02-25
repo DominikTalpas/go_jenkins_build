@@ -9,8 +9,7 @@ stages {
 
         stage('Checkout Code') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/DominikTalpas/go_jenkins_build.git'
-}]]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/DominikTalpas/go_jenkins_build.git'}]]])
             }
         }
 stage('Cloning our Git') {
