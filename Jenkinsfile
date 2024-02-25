@@ -6,6 +6,13 @@ dockerImage = ''
 }
 agent any
 stages {
+
+        stage('Checkout Code') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/DominikTalpas/go_jenkins_build.git'
+}]]])
+            }
+        }
 stage('Cloning our Git') {
 steps {
 git 'https://github.com/DominikTalpas/go_jenkins_build.git'
