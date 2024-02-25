@@ -5,6 +5,7 @@ registryCredential = 'dockerhub_id'
 dockerImage = ''
 }
 agent any
+options { skipDefaultCheckout() }        
 stages {
 
         stage('Checkout Code') {
